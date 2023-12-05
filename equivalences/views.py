@@ -1,13 +1,6 @@
-from rest_framework import generics,permissions
-from .models import University, Program, Section, Course, RecognizedCourse
-from .serializers import (
-    UniversitySerializer,
-    ProgramSerializer,
-    SectionSerializer,
-    CourseSerializer,
-    RecognizedCourseSerializer,UniversitySerializer
-)
-
+from rest_framework import generics, permissions
+from .models import University, Program, StudyPlan, Subject
+from .serializers import UniversitySerializer, ProgramSerializer, StudyPlanSerializer, SubjectSerializer
 
 
 class UniversityListCreateView(generics.ListCreateAPIView):
@@ -34,51 +27,36 @@ class ProgramRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class SectionListCreateView(generics.ListCreateAPIView):
-    queryset = Section.objects.all()
-    serializer_class = SectionSerializer
+class StudyPlanListCreateView(generics.ListCreateAPIView):
+    queryset = StudyPlan.objects.all()
+    serializer_class = StudyPlanSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class SectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Section.objects.all()
-    serializer_class = SectionSerializer
+class StudyPlanRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = StudyPlan.objects.all()
+    serializer_class = StudyPlanSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CourseListCreateView(generics.ListCreateAPIView):
-    queryset = Course.objects.all()
-    serializer_class = CourseSerializer
+class SubjectList(generics.ListCreateAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
-class CourseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Course.objects.all()
-    serializer_class = CourseSerializer
+class SubjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-
-class RecognizedCourseListCreateView(generics.ListCreateAPIView):
-    queryset = RecognizedCourse.objects.all()
-    serializer_class = RecognizedCourseSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class RecognizedCourseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = RecognizedCourse.objects.all()
-    serializer_class = RecognizedCourseSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
 
 
 class UniversityDataView(generics.RetrieveAPIView):
     queryset = University.objects.all()
     serializer_class = UniversitySerializer
-    lookup_url_kwarg = 'university_id'
+    lookup_url_kwarg = "university_id"
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         print("Queryset:", queryset)
         return super().get(request, *args, **kwargs)
-    

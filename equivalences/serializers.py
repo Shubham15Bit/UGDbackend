@@ -1,34 +1,31 @@
 from rest_framework import serializers
-from .models import University, Program, Section, Course, RecognizedCourse
+from .models import University, Program, StudyPlan,Subject
 
-class CourseSerializer(serializers.ModelSerializer):
+
+class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Course
-        fields = '__all__'
+        model = Subject
+        fields = "__all__"
 
-class SectionSerializer(serializers.ModelSerializer):
-    courses = CourseSerializer(many=True, read_only=True)
 
+class StudyPlanSerializer(serializers.ModelSerializer):
+    subjects = SubjectSerializer(many=True, read_only=True)
     class Meta:
-        model = Section
-        fields = '__all__'
+        model = StudyPlan
+        fields = "__all__"
+
 
 class ProgramSerializer(serializers.ModelSerializer):
-    sections = SectionSerializer(many=True, read_only=True)
+    study_Plan = StudyPlanSerializer(many=True, read_only=True, source='study_plan')
 
     class Meta:
         model = Program
-        fields = '__all__'
+        fields = "__all__"
 
-class RecognizedCourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecognizedCourse
-        fields = '__all__'
 
 class UniversitySerializer(serializers.ModelSerializer):
-    programs = ProgramSerializer(many=True, read_only=True)
-    recognized_courses = RecognizedCourseSerializer(many=True, read_only=True)
+    programs = ProgramSerializer(many=True, read_only=True) 
 
     class Meta:
         model = University
-        fields = '__all__'
+        fields = "__all__"
