@@ -1,6 +1,11 @@
 from rest_framework import generics, permissions
-from .models import University, Program, StudyPlan, Subject
-from .serializers import UniversitySerializer, ProgramSerializer, StudyPlanSerializer, SubjectSerializer
+from .models import University, Program, StudyPlan, Equivalence
+from .serializers import (
+    UniversitySerializer,
+    ProgramSerializer,
+    StudyPlanSerializer,
+    EquivalenceSerializer,
+)
 
 
 class UniversityListCreateView(generics.ListCreateAPIView):
@@ -39,14 +44,15 @@ class StudyPlanRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class SubjectList(generics.ListCreateAPIView):
-    queryset = Subject.objects.all()
-    serializer_class = SubjectSerializer
+class EquivalenceListCreateView(generics.ListCreateAPIView):
+    queryset = Equivalence.objects.all()
+    serializer_class = EquivalenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class SubjectDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Subject.objects.all()
-    serializer_class = SubjectSerializer
+
+class EquivalenceRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Equivalence.objects.all()
+    serializer_class = EquivalenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

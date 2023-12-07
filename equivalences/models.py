@@ -25,9 +25,14 @@ class StudyPlan(models.Model):
         return f"{self.code} - {self.name}"
     
     
-class Subject(models.Model):
-    study_plans = models.ForeignKey(StudyPlan, on_delete=models.CASCADE, related_name='subjects')
-    name = models.CharField(max_length=200, null=True, blank=True)
+class Equivalence(models.Model):
+    origin_university = models.ForeignKey(University, on_delete=models.CASCADE, related_name='equivalences_origin')
+    origin_course_name = models.CharField(max_length=255)
+    destination_university = models.ForeignKey(University, on_delete=models.CASCADE, related_name='equivalences_destination')
+    destination_course_code = models.CharField(max_length=50)
+    destination_course_name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return f"{self.destination_university} - {self.destination_course_code}"
+   
+    

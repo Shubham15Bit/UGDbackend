@@ -2,8 +2,9 @@ from django.urls import path
 from .views import (
     UniversityListCreateView, UniversityRetrieveUpdateDestroyView,
     ProgramListCreateView, ProgramRetrieveUpdateDestroyView,
-    StudyPlanListCreateView,StudyPlanRetrieveUpdateDestroyView,UniversityDataView,
-    SubjectList,SubjectDetail,
+    StudyPlanListCreateView,StudyPlanRetrieveUpdateDestroyView,
+    EquivalenceListCreateView,EquivalenceRetrieveUpdateDestroyView,
+    UniversityDataView,
 )
 
 urlpatterns = [
@@ -16,8 +17,8 @@ urlpatterns = [
     path('study-plan/', StudyPlanListCreateView.as_view(), name='course-list-create'),
     path('study-plan/<int:pk>/', StudyPlanRetrieveUpdateDestroyView.as_view(), name='course-retrieve-update-destroy'),
 
-    path('subjects/', SubjectList.as_view(), name='subject-list'),
-    path('subjects/<int:pk>/', SubjectDetail.as_view(), name='subject-detail'),
+    path('equivalence-data/', EquivalenceListCreateView.as_view(), name='equivalence-list-create'),
+    path('equivalences-data/<int:pk>/', EquivalenceRetrieveUpdateDestroyView.as_view(), name='equivalence-retrieve-update-destroy'),
     
     path('university/<int:university_id>/', UniversityDataView.as_view(), name='university-data'),
 ]
