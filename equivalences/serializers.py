@@ -9,7 +9,7 @@ class StudyPlanSerializer(serializers.ModelSerializer):
 
 
 class ProgramSerializer(serializers.ModelSerializer):
-    study_Plan = StudyPlanSerializer(many=True, read_only=True, source="study_plan")
+    study_Plan = StudyPlanSerializer(many=True, read_only=True, source="study_plans")
 
     class Meta:
         model = Program

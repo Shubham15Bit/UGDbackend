@@ -64,5 +64,4 @@ class UniversityDataView(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        print("Queryset:", queryset)
         return super().get(request, *args, **kwargs)
