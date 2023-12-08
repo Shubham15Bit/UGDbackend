@@ -4,7 +4,7 @@ from .views import (
     ProgramListCreateView, ProgramRetrieveUpdateDestroyView,
     StudyPlanListCreateView,StudyPlanRetrieveUpdateDestroyView,
     EquivalenceListCreateView,EquivalenceRetrieveUpdateDestroyView,
-    UniversityDataView,
+    UniversityDataView,GetOriginCoursesView,
 )
 
 urlpatterns = [
@@ -21,4 +21,6 @@ urlpatterns = [
     path('equivalences-data/<int:pk>/', EquivalenceRetrieveUpdateDestroyView.as_view(), name='equivalence-retrieve-update-destroy'),
     
     path('university/<int:university_id>/', UniversityDataView.as_view(), name='university-data'),
+
+    path('get_origin_courses/', GetOriginCoursesView.as_view(), name='get_origin_courses'),
 ]
