@@ -22,5 +22,5 @@ urlpatterns = [
     
     path('university/<int:university_id>/', UniversityDataView.as_view(), name='university-data'),
 
-    path('get_origin_courses/', GetOriginCoursesView.as_view(), name='get_origin_courses'),
+    path('get_destination_courses/', GetOriginCoursesView.as_view(), name='get_origin_courses'),
 ]
