@@ -72,29 +72,59 @@ class UniversityDataView(generics.RetrieveAPIView):
 
 class GetOriginCoursesView(APIView):
     serializer_class = EquivalenceSerializer
+    program_serializer_class = ProgramSerializer
 
     def post(self, request, *args, **kwargs):
         destination_university = request.data.get("destination_university", None)
         origin_university = request.data.get("origin_university", None)
-        destination_course_name = request.data.get("destination_course_name", None)
-
-        # Validate the input parameters
-        if not (
-            destination_university and origin_university and destination_course_name
-        ):
+        origin_course_name = request.data.get("origin_course_name", None)
+        if not (destination_university and origin_university and origin_course_name):
             return Response(
                 {"error": "Missing required parameters."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        try:
+            origin_university_instance = University.objects.get(id=origin_university)
+            print(origin_university_instance)
+        except University.DoesNotExist:
+            return Response(
+                {"error": "Invalid university ID."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         # Query the Equivalence model to get the matching origin course names
         queryset = Equivalence.objects.filter(
             destination_university=destination_university,
             origin_university=origin_university,
-            destination_course_name=destination_course_name,
+            origin_course_name=origin_course_name,
         )
-
         serializer = self.serializer_class(queryset, many=True)
-        origin_course_names = [item["origin_course_name"] for item in serializer.data]
+        approved_destination_name = [
+            item["destination_name"] for item in serializer.data
+        ]
+        approved_origin_course_name = [
+            item["origin_course_name"] for item in serializer.data
+        ]
+        # Get all programs in the destination university
+        programs_queryset = Program.objects.filter(
+            university=origin_university_instance
+        )
+        print(programs_queryset)
 
-        return Response({"origin_course_names": origin_course_names})
+        # Serialize Program data
+        programs_serializer = self.program_serializer_class(
+            programs_queryset, many=True
+        )
+        # Exclude study plans based on approved_origin_course_name
+        for program_data in programs_serializer.data:
+            program_data["study_Plan"] = [
+                study_plan for study_plan in program_data["study_Plan"]
+                if study_plan["name"] not in approved_origin_course_name
+            ]
+
+        response_data = {
+            "approved_destination_name": approved_destination_name,
+            "programs": programs_serializer.data,
+        }
+
+        return Response({"destination_name": response_data})
