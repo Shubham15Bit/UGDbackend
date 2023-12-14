@@ -4,12 +4,13 @@ from .views import (
     ProgramListCreateView, ProgramRetrieveUpdateDestroyView,
     StudyPlanListCreateView,StudyPlanRetrieveUpdateDestroyView,
     EquivalenceListCreateView,EquivalenceRetrieveUpdateDestroyView,
-    UniversityDataView,GetOriginCoursesView,
+    UniversityDataView,GetOriginCoursesView,UniversityListAPIView
 )
 
 urlpatterns = [
     path('universities/', UniversityListCreateView.as_view(), name='university-list-create'),
     path('universities/<int:pk>/', UniversityRetrieveUpdateDestroyView.as_view(), name='university-retrieve-update-destroy'),
+    path('universities-list/', UniversityListAPIView.as_view(), name='university-list'),
 
     path('programs/', ProgramListCreateView.as_view(), name='program-list-create'),
     path('programs/<int:pk>/', ProgramRetrieveUpdateDestroyView.as_view(), name='program-retrieve-update-destroy'),
