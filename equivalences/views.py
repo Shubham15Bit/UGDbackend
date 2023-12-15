@@ -65,6 +65,14 @@ class EquivalenceRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     serializer_class = EquivalenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class EquivalenceListView(generics.ListAPIView):
+    serializer_class = EquivalenceSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        origin_university_id = self.kwargs['origin_university_id']  
+        return Equivalence.objects.filter(origin_university=origin_university_id)
+
 
 class UniversityDataView(generics.RetrieveAPIView):
     queryset = University.objects.all()
