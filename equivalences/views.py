@@ -1,11 +1,12 @@
 from rest_framework import generics, permissions
-from .models import University, Program, StudyPlan, Equivalence
+from .models import University, Program, StudyPlan, Equivalence, Student
 from .serializers import (
     UniversityListSerializer,
     UniversitySerializer,
     ProgramSerializer,
     StudyPlanSerializer,
     EquivalenceSerializer,
+    StudentSerializer,
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -65,12 +66,13 @@ class EquivalenceRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     serializer_class = EquivalenceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class EquivalenceListView(generics.ListAPIView):
     serializer_class = EquivalenceSerializer
     permission_classes = [permissions.AllowAny]
-    
+
     def get_queryset(self):
-        origin_university_id = self.kwargs['origin_university_id']  
+        origin_university_id = self.kwargs["origin_university_id"]
         return Equivalence.objects.filter(origin_university=origin_university_id)
 
 
@@ -92,18 +94,18 @@ class GetOriginCoursesView(APIView):
     def post(self, request, *args, **kwargs):
         destination_university = request.data.get("destination_university", None)
         origin_university = request.data.get("origin_university", None)
-        origin_course_name = request.data.get("origin_course_name", None)
+        origin_course_names = request.data.get("origin_course_names", None)
 
-        if not (destination_university and origin_university and origin_course_name):
+        if not (destination_university and origin_university):
             return Response(
                 {"error": "Missing required parameters."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         try:
             destination_university_instance = University.objects.get(
                 id=destination_university
             )
-            print(destination_university_instance)
         except University.DoesNotExist:
             return Response(
                 {"error": "Invalid university ID."},
@@ -113,13 +115,18 @@ class GetOriginCoursesView(APIView):
         queryset = Equivalence.objects.filter(
             destination_university=destination_university,
             origin_university=origin_university,
-            origin_course_name=origin_course_name,
         )
+
+        # Conditionally filter by origin_course_names if not "All"
+        if origin_course_names and origin_course_names != "All":
+            queryset = queryset.filter(origin_course_name__in=origin_course_names)
+
         serializer = self.serializer_class(queryset, many=True)
 
         approved_destination_name = [
             item["destination_name"] for item in serializer.data
         ]
+
         programs_queryset = Program.objects.filter(
             university=destination_university_instance
         )
@@ -142,10 +149,162 @@ class GetOriginCoursesView(APIView):
             program_data["study_Plan"] = [
                 study_plan
                 for study_plan in program_data["study_Plan"]
-                if study_plan["name"] not in all_destination_names
+                if study_plan["name"]
             ]
+
         response_data = {
             "approved_destination_name": approved_destination_name,
             "programs": programs_serializer.data,
         }
         return Response({"destination_name": response_data})
+
+
+# class GetOriginCoursesView(APIView):
+#     serializer_class = EquivalenceSerializer
+#     program_serializer_class = ProgramSerializer
+
+#     def post(self, request, *args, **kwargs):
+#         destination_university = request.data.get("destination_university", None)
+#         origin_university = request.data.get("origin_university", None)
+#         origin_course_names = request.data.get("origin_course_names", None)
+
+#         if not (destination_university and origin_university and origin_course_names):
+#             return Response(
+#                 {"error": "Missing required parameters."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         try:
+#             destination_university_instance = University.objects.get(
+#                 id=destination_university
+#             )
+#         except University.DoesNotExist:
+#             return Response(
+#                 {"error": "Invalid university ID."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         # Ensure origin_course_names is a list
+#         if not isinstance(origin_course_names, list):
+#             origin_course_names = [origin_course_names]
+
+#         response_data = []
+
+#         for origin_course_name in origin_course_names:
+#             queryset = Equivalence.objects.filter(
+#                 destination_university=destination_university,
+#                 origin_university=origin_university,
+#                 origin_course_name=origin_course_name,
+#             )
+#             serializer = self.serializer_class(queryset, many=True)
+
+#             approved_destination_name = [
+#                 item["destination_name"] for item in serializer.data
+#             ]
+
+#             programs_queryset = Program.objects.filter(
+#                 university=destination_university_instance
+#             )
+#             programs_serializer = self.program_serializer_class(
+#                 programs_queryset, many=True
+#             )
+
+#             mapped_queryset = Equivalence.objects.filter(
+#                 destination_university=destination_university,
+#                 origin_university=origin_university,
+#             )
+#             mapped_serializer = self.serializer_class(mapped_queryset, many=True)
+
+#             # Extract all destination names from mapped data
+#             all_destination_names = [
+#                 item["destination_name"] for item in mapped_serializer.data
+#             ]
+
+#             for program_data in programs_serializer.data:
+#                 program_data["study_Plan"] = [
+#                     study_plan
+#                     for study_plan in program_data["study_Plan"]
+#                     if study_plan["name"]
+#                 ]
+
+#             response_data.append(
+#                 {
+#                     "origin_course_name": origin_course_name,
+#                     "approved_destination_name": approved_destination_name,
+#                     "programs": programs_serializer.data,
+#                 }
+#             )
+
+#         return Response({"destination_names": response_data})
+
+
+# class GetOriginCoursesView(APIView):
+#     serializer_class = EquivalenceSerializer
+#     program_serializer_class = ProgramSerializer
+
+#     def post(self, request, *args, **kwargs):
+#         destination_university = request.data.get("destination_university", None)
+#         origin_university = request.data.get("origin_university", None)
+#         origin_course_name = request.data.get("origin_course_name", None)
+#         if not (destination_university and origin_university and origin_course_name):
+#             return Response(
+#                 {"error": "Missing required parameters."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+#         try:
+#             destination_university_instance = University.objects.get(
+#                 id=destination_university
+#             )
+#             print(destination_university_instance)
+#         except University.DoesNotExist:
+#             return Response(
+#                 {"error": "Invalid university ID."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+#         queryset = Equivalence.objects.filter(
+#             destination_university=destination_university,
+#             origin_university=origin_university,
+#             origin_course_name=origin_course_name,
+#         )
+#         serializer = self.serializer_class(queryset, many=True)
+#         approved_destination_name = [
+#             item["destination_name"] for item in serializer.data
+#         ]
+#         programs_queryset = Program.objects.filter(
+#             university=destination_university_instance
+#         )
+#         programs_serializer = self.program_serializer_class(
+#             programs_queryset, many=True
+#         )
+#         mapped_queryset = Equivalence.objects.filter(
+#             destination_university=destination_university,
+#             origin_university=origin_university,
+#         )
+#         mapped_serializer = self.serializer_class(mapped_queryset, many=True)
+#         # Extract all destination names from mapped data
+#         all_destination_names = [
+#             item["destination_name"] for item in mapped_serializer.data
+#         ]
+#         for program_data in programs_serializer.data:
+#             program_data["study_Plan"] = [
+#                 study_plan
+#                 for study_plan in program_data["study_Plan"]
+#                 if study_plan["name"]
+#             ]
+#         response_data = {
+#             "approved_destination_name": approved_destination_name,
+#             "programs": programs_serializer.data,
+#         }
+#         return Response({"destination_name": response_data})
+
+
+class StudentListCreateView(generics.ListCreateAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class StudentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    permission_classes = [permissions.AllowAny]

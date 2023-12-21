@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import validate_email
 
 
 class University(models.Model):
@@ -37,3 +38,8 @@ class Equivalence(models.Model):
         return f"{self.destination_university} - {self.destination_course_code} - {self.destination_name}"
    
     
+class Student(models.Model):
+    name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    email = models.EmailField(validators=[validate_email])

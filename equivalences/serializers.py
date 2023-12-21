@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import University, Program, StudyPlan, Equivalence
+from .models import University, Program, StudyPlan, Equivalence, Student
 
 
 class UniversityListSerializer(serializers.ModelSerializer):
@@ -33,4 +33,10 @@ class UniversitySerializer(serializers.ModelSerializer):
 class EquivalenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equivalence
+        fields = "__all__"
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
         fields = "__all__"
