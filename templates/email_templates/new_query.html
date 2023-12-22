@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #001d23;
+        padding: 20px;
+        color: "white";
+      }
+      .container {
+        background-color: #003f4c;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        color: white;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      .message {
+        color: #00d4ff;
+        font-size: 16px;
+      }
+
+      .advertisment {
+        margin-top: 200px;
+        color: #00d4ff;
+        font-size: 16px;
+      }
+
+      .btn {
+        padding: 10px;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border: 1px solid #00d4ff;
+        background-color: #00d4ff;
+        border-radius: 10px;
+      }
+      .btn:hover {
+        color: #00d4ff;
+        border: 1px solid white;
+        background-color: white;
+      }
+
+      .sign {
+        margin-top: 100px;
+        color: #00d4ff;
+        font-size: 16px;
+      }
+
+      img {
+        height: 100px;
+        width: 150px;
+      }
+
+      a {
+        font-size: 20px;
+        color: white;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Hello,</p>
+    <p>A new Query has been created with the following details:</p>
+    <ul>
+      <li>ID: {{ student.id }}</li>
+      <li>Name: {{ student.name }}</li>
+      <li>Last Name: {{ student.last_name }}</li>
+      <li>Phone: {{ student.phone }}</li>
+      <li>Email: {{ student.email }}</li>
+      <li>
+        Report: {% if student.report %}<a
+          href="{{ student.report.url }}"
+          target="_blank"
+          >Download Report</a
+        >{% else %}Not available{% endif %}
+      </li>
+    </ul>
+    <p>Thank you.</p>
+  </body>
+</html>
