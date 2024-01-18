@@ -101,6 +101,7 @@ class GetOriginCoursesView(APIView):
     serializer_class = EquivalenceSerializer
     program_serializer_class = ProgramSerializer
     student_serializer_class = StudentSerializer
+    permission_classes = [permissions.AllowAny]
 
     def draw_program_details(self, p, program, start_y):
         p.drawString(80, start_y, f"Program Name: {program['name']}")
@@ -172,7 +173,7 @@ class GetOriginCoursesView(APIView):
             parent=getSampleStyleSheet()["BodyText"],
             spaceAfter=6,
             leftIndent=20,
-        )  
+        )
         story.append(Paragraph("<b>Programs:</b>", program_style))
         for program in response_data["programs"]:
             story.append(
@@ -262,8 +263,19 @@ class GetOriginCoursesView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        mapped_queryset = Equivalence.objects.filter(
+            destination_university=destination_university,
+            origin_university=origin_university,
+        )
+        mapped_serializer = self.serializer_class(mapped_queryset, many=True)
+        #  Extract all destination names from mapped data
+        all_mapped_data = mapped_serializer.data
+        all_destination_names = [item["destination_name"] for item in all_mapped_data]
+        # Filter approved_destination_name based on mapping with origin_course_names
         approved_destination_name = [
-            item["destination_name"] for item in serializer.data
+            item["destination_name"]
+            for item in serializer.data
+            if item["destination_name"] in all_destination_names
         ]
 
         programs_queryset = Program.objects.filter(
@@ -272,17 +284,6 @@ class GetOriginCoursesView(APIView):
         programs_serializer = self.program_serializer_class(
             programs_queryset, many=True
         )
-
-        mapped_queryset = Equivalence.objects.filter(
-            destination_university=destination_university,
-            origin_university=origin_university,
-        )
-        mapped_serializer = self.serializer_class(mapped_queryset, many=True)
-
-        # Extract all destination names from mapped data
-        all_destination_names = [
-            item["destination_name"] for item in mapped_serializer.data
-        ]
 
         for program_data in programs_serializer.data:
             program_data["study_Plan"] = [
