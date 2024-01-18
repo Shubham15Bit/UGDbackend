@@ -289,7 +289,7 @@ class GetOriginCoursesView(APIView):
             program_data["study_Plan"] = [
                 study_plan
                 for study_plan in program_data["study_Plan"]
-                if study_plan["name"]
+                if study_plan["name"] not in approved_destination_name
             ]
 
         response_data = {
