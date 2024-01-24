@@ -326,3 +326,60 @@ class StudentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [permissions.AllowAny]
+
+
+
+class StudyPlanCreate(APIView):
+    permission_classes = [permissions.AllowAny]
+    def post(self, request, *args, **kwargs):
+        # Assuming 'program' with id=1 already exists in the database
+        program_id = 1
+        program_instance = Program.objects.get(pk=program_id)
+
+        for study_plan_data in dataUGD:
+            study_plan_data['program'] = program_instance.id  # Set program to the desired program ID
+            serializer = StudyPlanSerializer(data=study_plan_data)
+            
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                # If any data is not valid, return the error response
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "Study Plans created successfully"}, status=status.HTTP_201_CREATED)
+
+
+class EquivalenceCreate(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        destination_university_id = 1  # Set the destination university ID
+        destination_university = University.objects.get(pk=destination_university_id)
+
+        for equivalence_data in dataUniversities:
+            # Check if any required field is empty
+            if (
+                not equivalence_data["destination_course_code"]
+                or not equivalence_data["destination_name"]
+                or equivalence_data["destination_program"] is None
+                or not equivalence_data["origin_course_name"]
+                or equivalence_data["origin_university"] is None
+            ):
+                # Skip to the next entry if any field is empty
+                continue
+
+            # Additional check for origin_course_name
+            if not equivalence_data["origin_course_name"]:
+                # Skip to the next entry if origin_course_name is empty
+                continue
+
+            equivalence_data["destination_university"] = destination_university.id
+            serializer = EquivalenceSerializer(data=equivalence_data)
+
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                # If any data is not valid, log the error and continue with the next entry
+                print(f"Error creating equivalence: {serializer.errors}")
+
+        return Response({"message": "Equivalences created successfully"}, status=status.HTTP_201_CREATED)
