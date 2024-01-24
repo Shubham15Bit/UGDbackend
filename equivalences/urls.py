@@ -6,6 +6,7 @@ from .views import (
     EquivalenceListCreateView,EquivalenceRetrieveUpdateDestroyView,EquivalenceListView,
     UniversityDataView,GetOriginCoursesView,UniversityListAPIView,
     StudentListCreateView,StudentRetrieveUpdateDestroyView,
+    StudyPlanCreate,EquivalenceCreate
 )
 
 urlpatterns = [
@@ -29,4 +30,7 @@ urlpatterns = [
 
     path('students/', StudentListCreateView.as_view(), name='student-list-create'),
     path('students/<int:pk>/', StudentRetrieveUpdateDestroyView.as_view(), name='student-detail'),
+
+    path('study-plan-create/', StudyPlanCreate.as_view(), name='course-create'),
+    path('equivalences-data-create/', EquivalenceCreate.as_view(), name='equivalence-create')
 ]
