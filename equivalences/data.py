@@ -7456,6 +7456,12 @@ dataUGD =[
     "code": "LCNI35",
     "name": "PRÁCTICA PROFESIONAL SUPERVISADA II",
 },
+
+]
+
+
+ugdCourse2 = [
+    
 {
     "code": "LCNI2",
     "name": "MATEMÁTICA Y ESTADÍSTICA",
@@ -7500,6 +7506,5 @@ dataUGD =[
     "code": "LCNI42",
     "name": "TALLER DE INVESTIGACIÓN FINAL II",
 },
-
 ]
-
+    
