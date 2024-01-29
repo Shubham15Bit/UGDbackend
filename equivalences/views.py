@@ -686,7 +686,7 @@ class GetOriginCoursesView(APIView):
         pdf_url = self.generate_pdf_response(response_data, student_instance)
         response_data.update(
             {
-                "pdf_url": "http://127.0.0.1:8000" + pdf_url,
+                "pdf_url": " https://virtual.ugd.edu.ar" + pdf_url,
             }
         )
         return Response({"destination_name": response_data})
